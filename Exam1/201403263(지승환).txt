@@ -1,0 +1,79 @@
+import sys
+
+def test(did_pass):
+    """  Print the result of a test.  """
+linenum = sys._getframe(1).f_lineno   # Get the caller's line number.
+if did_pass:
+        msg = "Test at line {0} ok.".format(linenum)
+    else:
+        msg = ("Test at line {0} FAILED.".format(linenum))
+    print(msg)
+
+def add_string(n):
+    if(n[len(n)-1]=="g"):
+        return n+"ly"
+else:
+        return n+"ing"
+
+for i in range(6):
+    print('*'*i)
+for j in range(6):
+    print('*'*(4-j))
+
+
+def square_of_even(n):
+    a=[]
+    for i in range(n):
+        if(i==0 and i==1 and i%2!=0):
+            continue
+        if(i!=0 and i!=1 and i%2==0):
+            n=i*i
+            a.append(n)
+    return a
+
+
+def is_leep_year(n):
+
+    if (n%4==0):
+        if(n%100==0):
+            if(n%400==0):
+                return True
+            else :
+                return False
+        else:
+            return True
+    else:
+        return False
+
+
+def days_in_month(y,m):
+    if(is_leep_year(y)==True):
+        if(m%2==0):
+            if(m==2):
+                return 29
+return 31
+else:
+            return 30
+else:
+        if(m%2==0):
+            return 31
+else :
+            return 30
+
+
+
+
+12
+def solo(input):
+  output = []
+  for x in input:
+    if x not in output:
+      output.append(x)
+  return output
+
+def unique_sort(text):
+    a= text.split()
+    c=solo(a)
+    c.sort()
+    print(" ".join((c)))
+unique_sort("hello world and practice makes perfect\nand hello world again")
