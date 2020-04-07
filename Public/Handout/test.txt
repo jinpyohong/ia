@@ -1,0 +1,3 @@
+My first file written from Python
+---------------------------------
+지구야, 안녕!
