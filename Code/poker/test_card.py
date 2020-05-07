@@ -4,11 +4,15 @@ from card import suits, ranks, Card, PKCard, Deck
 def test_PKCard_init():
     card = PKCard('AC')
     assert card.rank == 'A' and card.suit == 'C'
+    assert card.card == 'AC'
 
 def test_PKCard_init_exception():
     for face in ['10S', 'BD', 'TA']:
         with pytest.raises(ValueError):
             PKCard(face)
+
+def test_PKCard_repr():
+    assert repr(PKCard('AC')) == 'AC'
 
 @pytest.fixture
 def all_faces():
@@ -18,9 +22,6 @@ def test_PKCard_value(all_faces):
     for face in all_faces:
         card, expected = PKCard(face), PKCard.VALUES[face[0]]
         assert card.value() == expected
-
-def test_PKCard_repr():
-    assert repr(PKCard('AC')) == 'AC'
 
 @pytest.fixture
 def c9C():
@@ -34,7 +35,7 @@ def c9H():
 def cTH():
     return PKCard('TH')
 
-def test_PKCard_com(c9C, c9H, cTH):
+def test_PKCard_comp(c9C, c9H, cTH):
     assert c9C == c9C and c9C == c9H
     assert c9H < cTH and c9C < cTH
     assert c9C <= c9H <= cTH
@@ -43,12 +44,12 @@ def test_PKCard_com(c9C, c9H, cTH):
     assert c9C != cTH and c9H != cTH
 
 def test_PKCard_sort(all_faces):
-    all_cards = [PKCard(r+s) for r in ranks for s in suits]
+    all_cards = [PKCard(c) for c in all_faces]
     import random
     random.shuffle(all_cards)
     all_cards.sort()
-    # assert [c.value() for c in all_cards] \
-    #     == [i for s in suits for i in range(len(ranks))]
+    assert [c.value() for c in all_cards] \
+        == [i for i in range(2, len(ranks)+2) for s in suits ]
 
 @pytest.fixture
 def deck():
