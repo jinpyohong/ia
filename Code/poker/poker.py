@@ -1,6 +1,9 @@
 import sys
 from enum import IntEnum
 import logging
+if sys.version_info < (3, 6):
+    # Use OrderedDict, instead.
+    from collections import OrderedDict as dict
 
 from card import PKCard, Deck, ranks, suits
 
@@ -22,7 +25,7 @@ class Hands:
     
     Constructor: examples:
         Hands(['8D', '8H', '3D', 'AD', 'AS'])
-        or Hand(list of PKCard objects)
+        or Hand([PKCard('8D'), '8H', PKCard('3D'), 'AD', 'AS'])
     """
     def __init__(self, cards):
         if len(cards) != 5:
@@ -33,19 +36,26 @@ class Hands:
                 card_list.append(card)
             else:
                 card_list.append(PKCard(card))
-        self.cards = sorted(card_list, reverse=True)  # sorted list of Card objects
+        self.cards = card_list    # can be re-ordered afterwards
         self.ranking = None
 
     def __repr__(self):
         return '-'.join([repr(c) for c in self.cards]) + ': ' + repr(self.ranking)
     
+    def _check(self, other):
+        if self.ranking is None or other.ranking is None:
+            raise AttributeError('not evaluated. call eval() method')
+
     def __eq__(self, other):
+        self._check(other)
         return (self.ranking, self.cards) == (other.ranking, other.cards)
     
     def __gt__(self, other):
+        self._check(other)
         return (self.ranking, self.cards) > (other.ranking, other.cards)
     
     def __lt__(self, other):
+        self._check(other)
         return (self.ranking, self.cards) < (other.ranking, other.cards)
     
     def __ne__(self, other): return not self.__eq__(other)
@@ -53,6 +63,7 @@ class Hands:
     def __ge__(self, other): return not self.__lt__(other) 
  
     def is_flush(self):
+        self.cards.sort(reverse=True)
         suited = dict((suit, 0) for suit in suits)
         for card in self.cards:
             suited[card.suit] += 1       # count for each suit
@@ -63,6 +74,7 @@ class Hands:
     
         Don't need to check straight flush.
         """
+        self.cards.sort(reverse=True)
         values = [c.value() for c in self.cards]
         if values == list(range(values[0], values[0] - 5, -1)):
             return True
@@ -77,14 +89,7 @@ class Hands:
         return False
     
     def classify_by_rank(self):
-        if sys.version_info >= (3, 6):
-            # dict keeps insertion order from Python 3.6
-            ranked = dict()
-        else:
-            # Use OrderedDict, instead.
-            from collections import OrderedDict
-            ranked = OrderedDict()    
-        # assume self.cards is sorted in descending order
+        ranked = dict()    
         for card in self.cards:
             if card.rank in ranked:
                 ranked[card.rank].append(card)
@@ -93,18 +98,12 @@ class Hands:
         return ranked
     
     def find_a_kind(self):
-        """Find all pairs, threes, and fours of a rank."""
-        if sys.version_info >= (3, 6):
-            # dict keeps insertion order from Python 3.6
-            kind = dict()
-        else:
-            # Use OrderedDict, instead.
-            from collections import OrderedDict
-            kind = OrderedDict()   
-
+        self.cards.sort(reverse=True)
         ranked = self.classify_by_rank()            
+        # classify by number of cards of same rank
+        kind = dict()
         for cards in ranked.values():
-            l = len(cards)      # cards: list of PKCard instances
+            l = len(cards)      # cards: list of PKCard instances of same rank
             if l >= 2:          # pair, tripple, four
                 if l in kind:
                     kind[l].append(cards)

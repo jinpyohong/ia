@@ -22,6 +22,14 @@ class Card(metaclass=ABCMeta):
         """
         raise NotImplementedError("value method not implemented")
 
+    @property
+    def rank(self):
+        return self.card[0]
+
+    @property
+    def suit(self):
+        return self.card[1]
+
     # card comparison operators
     def __gt__(self, other): return self.value() > other.value()
     def __ge__(self, other): return self.value() >= other.value()
@@ -39,23 +47,6 @@ class PKCard(Card):
     def value(self):
         return PKCard.VALUES[self.card[0]]
 
-    @property
-    def rank(self):
-        return self.card[0]
-
-    @property
-    def suit(self):
-        return self.card[1]
-
-    # Altenatives 
-    #
-    # def __getattr__(self, attr):
-    #     if attr == 'rank':
-    #         return self.card[0]
-    #     elif attr == 'suit':
-    #         return self.card[1]
-    #     else:
-    #         raise AttributeError(f'{attr}')
 
 class Deck:
     def __init__(self, cls):
